@@ -14,21 +14,30 @@ An AI-powered code review agent built with NestJS that automatically reviews Git
 
 ## Architecture
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   GitHub        │    │   Code Review   │    │   OpenAI        │
-│   Webhooks      │───▶│   Agent         │───▶│   GPT-4         │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                              │
-                              ▼
-                       ┌─────────────────┐
-                       │   Redis Queue   │
-                       └─────────────────┘
-                              │
-                              ▼
-                       ┌─────────────────┐
-                       │   PostgreSQL    │
-                       └─────────────────┘
+```mermaid
+graph TD
+    A[GitHub Webhooks] --> B[Code Review Agent]
+    B --> C[OpenAI GPT-4]
+    B --> D[Redis Queue]
+    D --> E[Background Processors]
+    E --> F[PostgreSQL Database]
+    E --> G[GitHub API]
+
+    subgraph "Event Processing"
+        B --> H[Webhook Validation]
+        H --> I[Job Queuing]
+    end
+
+    subgraph "Code Analysis"
+        E --> J[Diff Analysis]
+        J --> C
+        J --> K[Heuristic Checks]
+    end
+
+    subgraph "Response"
+        E --> L[Review Comments]
+        L --> G
+    end
 ```
 
 ## Prerequisites
@@ -45,7 +54,7 @@ An AI-powered code review agent built with NestJS that automatically reviews Git
 ### 1. Clone and Install Dependencies
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/sylvester-francis/Lintelligence.git
 cd Lintelligence
 npm install
 ```
@@ -122,13 +131,16 @@ npm run start:prod
 ## API Endpoints
 
 ### Webhook
+
 - `POST /webhook/github` - GitHub webhook endpoint
 
 ### Monitoring
+
 - `GET /stats` - Application statistics
 - `GET /stats/health` - Health check
 
 ### Example Stats Response
+
 ```json
 {
   "reviews": {
@@ -163,6 +175,7 @@ npm run test:e2e
 ## Docker Deployment
 
 ### Build and Run
+
 ```bash
 # Build the image
 docker build -t code-review-agent .
@@ -172,6 +185,7 @@ docker-compose up
 ```
 
 ### Environment Variables for Docker
+
 All environment variables from `.env` can be passed to the Docker container.
 
 ## How It Works
@@ -199,6 +213,7 @@ The agent checks for:
 ## Development
 
 ### Project Structure
+
 ```
 src/
 ├── entities/           # TypeORM database entities
@@ -251,16 +266,19 @@ MIT License - see LICENSE file for details
 ### Common Issues
 
 **Application won't start**
+
 - Check that all environment variables are set
 - Ensure PostgreSQL and Redis are running
 - Verify your OpenAI API key is valid
 
 **Webhooks not working**
+
 - Confirm webhook URL is accessible from GitHub
 - Check webhook secret matches your configuration
 - Verify GitHub token has correct permissions
 
 **Reviews not posting**
+
 - Check GitHub token permissions
 - Verify repository access
 - Monitor application logs for errors
@@ -268,6 +286,7 @@ MIT License - see LICENSE file for details
 ### Support
 
 For issues and questions:
+
 - Check the application logs
 - Review the `/stats` endpoint for system health
 - Create an issue in the repository
