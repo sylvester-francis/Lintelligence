@@ -15,7 +15,7 @@ An AI-powered code review agent built with NestJS that automatically reviews Git
 ## Architecture
 
 ```mermaid
-graph TD
+flowchart TD
     A[GitHub Webhooks] --> B[Code Review Agent]
     B --> C[OpenAI GPT-4]
     B --> D[Redis Queue]
@@ -23,21 +23,31 @@ graph TD
     E --> F[PostgreSQL Database]
     E --> G[GitHub API]
 
-    subgraph "Event Processing"
+    subgraph EP ["Event Processing"]
         B --> H[Webhook Validation]
         H --> I[Job Queuing]
     end
 
-    subgraph "Code Analysis"
+    subgraph CA ["Code Analysis"]
         E --> J[Diff Analysis]
         J --> C
         J --> K[Heuristic Checks]
     end
 
-    subgraph "Response"
+    subgraph R ["Response"]
         E --> L[Review Comments]
         L --> G
     end
+
+    classDef external fill:#e1f5fe,stroke:#0277bd,stroke-width:2px,color:#000
+    classDef internal fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+    classDef storage fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef process fill:#fff3e0,stroke:#f57c00,stroke-width:2px,color:#000
+
+    class A,C,G external
+    class B,H,I,J,K,L internal
+    class D,F storage
+    class E process
 ```
 
 ## Prerequisites
